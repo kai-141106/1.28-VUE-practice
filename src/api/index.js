@@ -9,3 +9,19 @@ export const loginAPI = function (data) {
     data
   })
 }
+
+// 获取用户信息
+export const userInfoAPI = () => {
+  return request({
+    url: '/mp/v1_0/user/profile',
+    headers: {
+      Authorization: 'Bearer ' + sessionStorage.getItem('token')
+    }
+  })
+}
+
+// 获取频道
+export const articleAddAPI = () => request({
+  url: '/mp/v1_0/channels',
+  method: 'GET'
+})

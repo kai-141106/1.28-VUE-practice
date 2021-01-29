@@ -21,7 +21,7 @@
           </el-form-item>
 
   <el-form-item>
-    <el-button type="primary" class="login-btn" @click='loginFn' >登录</el-button>
+    <el-button type="primary" class="login-btn" @click='loginFn' :loading="load">登录</el-button>
   </el-form-item>
 </el-form>
 
@@ -40,6 +40,7 @@ export default {
         code: '',
         check: false
       },
+      load: false,
       rules: {
         mobile: [{
           required: true,
@@ -70,9 +71,13 @@ export default {
     loginFn () {
       this.$refs.form.validate(async valid => { // form检验各种规则, valid有false代表验证失败
         if (!valid) return
+        this.load = true
         const res = await loginAPI(this.form)
-        console.log(res)
+        // console.log(res)
+        sessionStorage.setItem('token', res.data.data.token)
+        this.load = false
         this.$message.success('登录成功')
+        this.$router.push('/layout')
       })
     }
   }
