@@ -18,7 +18,8 @@ const routes = [
     redirect: '/layout/home',
     children: [
       { path: 'home', component: HomeView },
-      { path: 'addArticle', component: () => import('@/views/Article/addArticle') }
+      { path: 'addArticle', component: () => import('@/views/Article/addArticle') },
+      { path: 'articleList', component: () => import('@/views/Article/articleList') }
     ]
   },
   { path: '*', component: Page404View }

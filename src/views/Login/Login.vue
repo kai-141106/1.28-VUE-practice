@@ -31,6 +31,7 @@
 
 <script>
 import { loginAPI } from '@/api/index.js'
+import { loginRules } from '@/verify'
 export default {
   name: 'Login',
   data () {
@@ -41,30 +42,7 @@ export default {
         check: false
       },
       load: false,
-      rules: {
-        mobile: [{
-          required: true,
-          message: '请输入正确手机号',
-          trigger: 'blur',
-          pattern: /^1[3|4|5|6|7|8|9]\d{9}$/
-        }],
-        code: [{
-          required: true,
-          message: '请输入6位验证码',
-          trigger: 'blur', // 或者change 只要修改就触发
-          len: 6
-        }],
-        check: [{
-          validator: (rule, value, callback) => {
-            if (!value) {
-              callback(new Error('同意请勾选'))
-            } else {
-              callback()
-            }
-          },
-          trigger: 'change'
-        }]
-      }
+      rules: loginRules
     }
   },
   methods: {

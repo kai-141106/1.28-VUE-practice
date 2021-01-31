@@ -7,7 +7,7 @@
       <!-- 菜单区域(默认激活的是/layout/home) -->
       <el-menu
        router
-        default-active="/layout/home"
+        :default-active="$route.path"
         class="nav-menu"
         background-color="#002033"
         text-color="#fff"
@@ -19,7 +19,7 @@
           <i class="el-icon-s-home"></i>
           <span slot="title">首页</span>
         </el-menu-item>
-        <el-menu-item index="/layout/articles">
+        <el-menu-item index="/layout/articleList">
           <i class="el-icon-document"></i>
           <span slot="title">内容管理</span>
         </el-menu-item>
