@@ -39,9 +39,12 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item>
+              <my-cover></my-cover>
+        </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="createFn(false)" >发表</el-button>
+          <el-button type="primary" @click="createFn(false)" :loading='load' >发表</el-button>
           <el-button  @click="createFn(true)">存入草稿</el-button>
         </el-form-item>
       </el-form>
@@ -50,12 +53,13 @@
 </template>
 
 <script>
-import { channelListAPI, articleAddAPI } from '@/api'
+import { channelListAPI, articleAddAPI, articleByIdAPI, articleUpdateAPI } from '@/api'
 
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+import MyCover from '@/components/MyCover.vue'
 
 export default {
   name: 'articleAdd',
@@ -107,36 +111,67 @@ export default {
             message: '频道必须选择'
           }
         ]
-      }
+      },
+      articleId: -1
     }
   },
   async created () {
     const res = await channelListAPI()
     this.articleArr = res.data.data.channels
     // console.log(this.articleArr)
+    // 判断 是否有id
+    if (this.$route.query.id) {
+      this.articleId = this.$route.query.id
+      // console.log(articleId)
+      const artres = await articleByIdAPI(this.articleId)
+      // console.log(res)t
+      this.article = artres.data.data
+    }
   },
   methods: {
     async createFn (bool) {
-      console.log(this.article)
-      await articleAddAPI({ draft: bool }, this.article)
-      if (bool === false) {
-        this.$message({
-          message: '文章发表成功',
-          type: 'success'
-        })
-      } else {
-        this.$message({
-          message: '存入草稿成功',
-          type: 'success'
-        })
-      }
-      // console.log(res)
-      // 清空表单内容
-      Object.assign(this.article, this.$options.data().article)
+      // console.log(this.article)
+      this.$refs.form.validate(async valid => { // form检验各种规则, valid有false代表验证失败
+        if (!valid) return
+        this.load = true
+        // 等于1 就证明 不是更新文章 是新增
+        if (this.articleId === -1) {
+          await articleAddAPI({ draft: bool }, this.article)
+          if (bool === false) {
+            this.$message({
+              message: '文章发表成功',
+              type: 'success'
+            })
+          } else {
+            this.$message({
+              message: '存入草稿成功',
+              type: 'success'
+            })
+          }
+          // 清空表单内容
+          Object.assign(this.article, this.$options.data().article)
+        } else { // 不是1 就证明要更新文章
+          await articleUpdateAPI(this.articleId, { draft: bool }, this.article)
+          if (bool === false) {
+            this.$message({
+              message: '此文章编辑成功',
+              type: 'success'
+            })
+          } else {
+            this.$message({
+              message: '存入草稿成功',
+              type: 'success'
+            })
+          }
+          this.$router.push('/layout/articleList')
+        }
+        this.load = false
+      })
     }
   },
   components: {
-    quillEditor
+    quillEditor,
+    MyCover
   }
 }
 </script>

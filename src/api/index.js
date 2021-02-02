@@ -13,10 +13,8 @@ export const loginAPI = function (data) {
 // 获取用户信息
 export const userInfoAPI = () => {
   return request({
-    url: '/mp/v1_0/user/profile',
-    headers: {
-      Authorization: 'Bearer ' + sessionStorage.getItem('token')
-    }
+    url: '/mp/v1_0/user/profile'
+
   })
 }
 
@@ -30,9 +28,6 @@ export const channelListAPI = () => request({
 export const articleAddAPI = (params, data) => request({
   url: '/mp/v1_0/articles',
   method: 'POST',
-  headers: {
-    Authorization: 'Bearer ' + sessionStorage.getItem('token')
-  },
   params: params,
   data: data
 })
@@ -41,17 +36,34 @@ export const articleAddAPI = (params, data) => request({
 export const articleListAPI = (params) => request({
   url: '/mp/v1_0/articles',
   method: 'GET',
-  headers: {
-    Authorization: 'Bearer ' + sessionStorage.getItem('token')
-  },
   params
 })
 
-// 删除文章  --1.31 未引用
+// 删除文章
 export const articleDeleteAPI = (id) => request({
   url: '/mp/v1_0/articles/' + id,
-  method: 'DELETE',
-  headers: {
-    Authorization: 'Bearer ' + sessionStorage.getItem('token')
-  }
+  method: 'DELETE'
+
+})
+
+// 获取指定文章的
+export const articleByIdAPI = (id) => request({
+  url: '/mp/v1_0/articles/' + id,
+  method: 'GET'
+
+})
+
+// 更新指定文章
+export const articleUpdateAPI = (id, params, data) => request({
+  url: '/mp/v1_0/articles/' + id,
+  method: 'PUT',
+  params,
+  data
+})
+
+// 获取图片素材
+export const imgListAPI = (params) => request({
+  url: '/mp/v1_0/user/images',
+  method: 'GET',
+  params
 })

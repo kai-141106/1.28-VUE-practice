@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import { channelListAPI, articleListAPI } from '@/api/index.js'
+import { channelListAPI, articleListAPI, articleDeleteAPI } from '@/api/index.js'
 export default {
   name: 'articleList',
   data () {
@@ -135,12 +135,33 @@ export default {
       this.getArticleListFn()
     },
     hEdit (index, obj) {
-
+      console.log(obj.id)
+      // 跳转到 发布页面  编辑与其用的一个组件 把文章的id传过去
+      this.$router.push({
+        path: '/layout/addArticle',
+        query: {
+          id: obj.id
+        }
+      })
     },
-    async hDelete (index, obj) {
-      // console.log(obj.id)
-      // const res = await articleDeleteAPI(obj.id)
-      // console.log(res)
+    hDelete (index, obj) {
+      this.$confirm('此操作将永久删除该文章, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await articleDeleteAPI(obj.id)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        this.getArticleListFn()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     changePage (page) {
       this.form.page = page
