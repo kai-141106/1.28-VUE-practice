@@ -40,10 +40,15 @@ ajax.interceptors.response.use(function (response) {
   const errTxtObj = {
     'Please verify your real information in app.': '手机号码有误',
     'Invalid code.': '验证码错误',
-    'User must be authorized.': '身份错误，请重新登录'
-    // '': '身份验证失败'
+    'User must be authorized.': '身份错误，请重新登录',
+    'Invalid cover param.': '封面图片错误-请根据选择的数量上传'
   }
-  const messageKey = error.response.data.message
+  let messageKey
+  if (typeof error.response.data.message === 'object') {
+    messageKey = error.response.data.message.cover
+  } else {
+    messageKey = error.response.data.message
+  }
   Message({
     type: 'error',
     message: errTxtObj[messageKey],

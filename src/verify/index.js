@@ -27,5 +27,40 @@ export const loginRules = {
 
 }
 export const addArticleRules = {
-
+  title: [{
+    required: true,
+    min: 5,
+    max: 30,
+    message: '5-30个字符',
+    trigger: 'blur'
+  }],
+  content: [
+    {
+      required: true,
+      message: '内容必须填写',
+      trigger: 'blur'
+    }
+  ],
+  channel_id: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: '频道必须选择'
+    }
+  ],
+  cover: [
+    {
+      validator: (rule, value, callback) => {
+        if (value.images.indexOf(undefined) > -1) {
+          callback(new Error('图片数量有误'))
+        }
+        if (value.type === value.images.length || value.type === -1) {
+          callback()
+        } else {
+          callback(new Error('图片数量有误'))
+        }
+      },
+      required: true
+    }
+  ]
 }

@@ -21,7 +21,7 @@
           <quillEditor v-model="article.content" :options="editorOption"></quillEditor>
         </el-form-item>
         <el-form-item label="封面">
-          <el-radio-group v-model="article.cover.type">
+          <el-radio-group v-model="article.cover.type" @change="typeChange">
             <el-radio :label="1" >单图</el-radio>
             <el-radio :label="3" >三图</el-radio>
             <el-radio :label="0" >无图</el-radio>
@@ -30,7 +30,7 @@
         </el-form-item>
 
         <el-form-item label="频道" prop="channel_id">
-          <el-select  placeholder="请选择频道" v-model="article.channel_id">
+          <el-select  placeholder="请选择频道" v-model="article.channel_id" >
             <el-option
               v-for="item in articleArr"
               :key='item.id'
@@ -39,12 +39,21 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item>
-              <my-cover></my-cover>
+
+        <el-form-item prop="cover">
+          <el-row :gutter="20" v-if="article.cover.type!==-1">
+            <el-col :span="5"
+            v-for="(sum,index) in article.cover.type"
+            :key="sum"
+            >
+              <MyCover @coverimg='coverImgFn' :index='index' v-model="article.cover.images[index]"/>
+              </el-col>
+          </el-row>
+
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="createFn(false)" :loading='load' >发表</el-button>
+          <el-button type="primary" @click="createFn(false)" >发表</el-button>
           <el-button  @click="createFn(true)">存入草稿</el-button>
         </el-form-item>
       </el-form>
@@ -60,6 +69,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
 import MyCover from '@/components/MyCover.vue'
+import { addArticleRules } from '@/verify/index'
 
 export default {
   name: 'articleAdd',
@@ -89,29 +99,7 @@ export default {
         }
       },
       load: false,
-      rules: {
-        title: [{
-          required: true,
-          min: 5,
-          max: 30,
-          message: '5-30个字符',
-          trigger: 'blur'
-        }],
-        content: [
-          {
-            required: true,
-            message: '内容必须填写',
-            trigger: 'blur'
-          }
-        ],
-        channel_id: [
-          {
-            required: true,
-            trigger: 'blur',
-            message: '频道必须选择'
-          }
-        ]
-      },
+      rules: addArticleRules,
       articleId: -1
     }
   },
@@ -167,6 +155,21 @@ export default {
         }
         this.load = false
       })
+    },
+    coverImgFn (imgUrl, index) {
+      // console.log(imgUrl)
+      if (imgUrl === false) {
+        this.article.cover.images[index] = undefined
+      } else {
+        this.article.cover.images[index] = imgUrl
+      }
+    },
+    typeChange () {
+      if (this.article.cover.type === 0 || this.article.cover.type === -1) {
+        this.article.cover.images = []
+      } else {
+        this.article.cover.images = this.article.cover.images.slice(0, 1)
+      }
     }
   },
   components: {

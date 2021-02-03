@@ -3,7 +3,7 @@
   <div class="my-cover">
     <!-- 图片按钮 -->
     <div class="btn_img" @click="openDialog()">
-      <img src="../assets/default.png" />
+      <img :src="coverImageUrl" />
     </div>
     <!-- 对话框
     append-to-body为true, 弹出层显示在body之上
@@ -40,13 +40,13 @@
               :lg="4"
                v-for="item in imgListArr"
               :key="item.id"
+              @click.native="selectedFn(item)"
             >
               <!-- 确定图片如何适应容器框fit:cover -->
               <el-image
                 style="height: 100px"
                 :src="item.url"
                 fit="cover"
-                @click='selectImgUrl=item.url'
                 :class="{selected: selectImgUrl === item.url}"
               ></el-image>
             </el-col>
@@ -62,11 +62,24 @@
           </el-pagination>
         </el-tab-pane>
 
-        <el-tab-pane label="上传图片" name="upload">上传图片内容</el-tab-pane>
+        <el-tab-pane label="上传图片" name="upload">
+          <el-upload
+                class="upload-demo"
+                action="http://api-toutiao-web.itheima.net/mp/v1_0/user/images"
+                :headers="headers"
+                name='image'
+                :show-file-list='false'
+                :on-success="handleAvatarSuccess"
+                :before-upload="beforeAvatarUpload"
+            >
+               <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-tab-pane>
       </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click=" confirmFn">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -75,6 +88,7 @@
 <script>
 import { imgListAPI } from '@/api'
 import defaultPng from '@/assets/default.png' // 因为项目底层都是用webpack打包的assets图片, 转成base64字符串, 所以需要引入使用
+// console.log(defaultPng)s
 export default {
   name: 'MyCover',
   data () {
@@ -92,22 +106,17 @@ export default {
       },
       total: 0,
       imgListArr: [], // 存请求回来的图片
-      selectImgUrl: ''
+      selectImgUrl: '', // 存选中的图片的url地址
+      headers: {
+        Authorization: 'Bearer ' + sessionStorage.getItem('token')
+      },
+      imageUrl: ''// 上传成功的地址
+
     }
   },
-  methods: {
-    openDialog () {
-      this.dialogVisible = true
-    },
-    async getUserImgFn () {
-      const res = await imgListAPI(this.reqParmas)
-      this.imgListArr = res.data.data.results
-      this.total = res.data.data.total_count
-    },
-    async changePage (page) {
-      this.reqParmas.page = page
-      this.getUserImgFn()
-    }
+  props: {
+    index: Number,
+    value: String
   },
   watch: {
     radioType (newVal) {
@@ -119,8 +128,63 @@ export default {
       // }
       this.reqParmas.collect = this.radioType !== '全部'
       this.getUserImgFn()
+    },
+    value: {
+      immediate: true,
+      handler (newVal) {
+        if (newVal !== undefined) {
+          this.coverImageUrl = newVal
+        }
+      }
     }
   },
+  methods: {
+    beforeAvatarUpload (file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG) {
+        this.$message.error('图片只能是 JPG 格式 / PNG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M // 如果返回true就开始上传
+    },
+    handleAvatarSuccess (res, file) {
+      this.imageUrl = res.data.url
+      this.getUserImgFn()
+    },
+    openDialog () {
+      this.dialogVisible = true
+      this.selectImgUrl = this.coverImageUrl
+    },
+    async getUserImgFn () {
+      const res = await imgListAPI(this.reqParmas)
+      this.imgListArr = res.data.data.results
+      this.total = res.data.data.total_count
+    },
+    async changePage (page) {
+      this.reqParmas.page = page
+      this.getUserImgFn()
+    },
+    selectedFn (obj) {
+      if (this.selectImgUrl && this.selectImgUrl === obj.url) {
+        this.selectImgUrl = defaultPng
+      } else {
+        this.selectImgUrl = obj.url
+      }
+    },
+    confirmFn () {
+      this.dialogVisible = false
+      this.coverImageUrl = this.selectImgUrl
+      if (this.coverImageUrl === defaultPng) {
+        this.$emit('coverimg', false, this.index)
+      } else {
+        this.$emit('coverimg', this.coverImageUrl, this.index)
+      }
+    }
+  },
+
   async created () {
     this.getUserImgFn()
   }
@@ -170,4 +234,27 @@ export default {
   background: rgba(0, 0, 0, 0.3) url(../assets/selected.png) no-repeat center /
     50px 50px;
 }
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>

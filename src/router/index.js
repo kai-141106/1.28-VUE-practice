@@ -19,7 +19,8 @@ const routes = [
     children: [
       { path: 'home', component: HomeView },
       { path: 'addArticle', component: () => import('@/views/Article/addArticle') },
-      { path: 'articleList', component: () => import('@/views/Article/articleList') }
+      { path: 'articleList', component: () => import('@/views/Article/articleList') },
+      { path: 'image', name: 'image', component: () => import('@/views/Images/Images') }
     ]
   },
   { path: '*', component: Page404View }

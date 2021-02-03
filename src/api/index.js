@@ -67,3 +67,15 @@ export const imgListAPI = (params) => request({
   method: 'GET',
   params
 })
+
+// 图片收藏/取消
+export const collectedImgAPI = (id, data) => request({
+  url: '/mp/v1_0/user/images/' + id,
+  method: 'PUT',
+  data
+})
+// 删除图片
+export const imgDelAPI = (id) => request({
+  url: '/mp/v1_0/user/images/' + id,
+  method: 'DELETE'
+})
