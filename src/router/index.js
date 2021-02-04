@@ -20,7 +20,10 @@ const routes = [
       { path: 'home', component: HomeView },
       { path: 'addArticle', component: () => import('@/views/Article/addArticle') },
       { path: 'articleList', component: () => import('@/views/Article/articleList') },
-      { path: 'image', name: 'image', component: () => import('@/views/Images/Images') }
+      { path: 'image', name: 'image', component: () => import('@/views/Images/Images') },
+      { path: 'comment', name: 'comment', component: () => import('@/views/Comment/Comment') },
+      { path: 'fans', name: 'fans', component: () => import('@/views/Fans/Fans') },
+      { path: 'settings', name: 'settings', component: () => import('@/views/Settings/Settings') }
     ]
   },
   { path: '*', component: Page404View }

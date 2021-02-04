@@ -18,6 +18,19 @@ export const userInfoAPI = () => {
   })
 }
 
+// 更新用户信息
+export const updateUserInfoAPI = (data) => request({
+  url: '/mp/v1_0/user/profile',
+  method: 'PATCH',
+  data
+})
+// 更新用户头像
+export const updateAvatarAPI = (data) => request({
+  url: '/mp/v1_0/user/photo',
+  method: 'PATCH',
+  data
+})
+
 // 获取频道
 export const channelListAPI = () => request({
   url: '/mp/v1_0/channels',
@@ -78,4 +91,27 @@ export const collectedImgAPI = (id, data) => request({
 export const imgDelAPI = (id) => request({
   url: '/mp/v1_0/user/images/' + id,
   method: 'DELETE'
+})
+
+// 评论管理-获取评论列表
+export const commentListAPI = (params) => request({
+  url: '/mp/v1_0/articles',
+  method: 'GET',
+  params: {
+    response_type: 'comment',
+    ...params
+  }
+})
+// 评论管理 开启或关闭评论
+export const openOrCloseAPI = (params, data) => request({
+  url: '/mp/v1_0/comments/status',
+  method: 'PUT',
+  params,
+  data
+})
+// 获取粉丝列表
+export const fansListAPI = (params) => request({
+  url: '/mp/v1_0/followers',
+  method: 'GET',
+  params
 })

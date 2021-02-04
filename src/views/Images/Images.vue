@@ -56,7 +56,26 @@
         :append-to-body="true"
         :visible.sync="dialogVisible"
       >
-        <span>上传图片</span>
+<!--
+        action：上传地址
+        show-file-list:false，不需要显示已上传的文件列表
+        on-success： 上传成功之后的回调函数
+        before-upload: 上传之前对文件进行检测
+        name: 设置上传的文件参数名，要与后端接口中的要求一致。
+      -->
+        <el-upload
+          class="avatar-uploader"
+          action="http://api-toutiao-web.itheima.net/mp/v1_0/user/images"
+          :headers="headers"
+          :on-success="hUploadSuccess"
+          name="image"
+          :show-file-list="false"
+          :before-upload="beforeAvatarUpload"
+        >
+          <!-- 如果当前有预览地址就说明图片上传成功了。 -->
+          <img v-if="imgSrc" :src="imgSrc" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
       </el-dialog>
     </el-card>
   </div>
@@ -76,7 +95,11 @@ export default {
       },
       listArr: [],
       radio1: '全部',
-      total: 0
+      total: 0,
+      imgSrc: '',
+      headers: {
+        Authorization: 'Bearer ' + sessionStorage.getItem('token')
+      }
     }
   },
   watch: {
@@ -128,6 +151,23 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    hUploadSuccess (res, file) {
+      this.imgSrc = res.data.url
+      this.$message.success('图片素材上传成功')
+      this.dialogVisible = false
+      this.getImgListFn()
+    },
+    beforeAvatarUpload (file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG) {
+        this.$message.error('图片只能是 JPG 格式 / PNG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M // 如果返回true就开始上传
     }
   },
 

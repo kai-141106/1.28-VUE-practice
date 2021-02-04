@@ -105,6 +105,14 @@ export default {
     // console.log(res)
     this.name = res.data.data.name
     this.photo = res.data.data.photo
+    this.$eventBus.$on('photourl', (url) => {
+      // console.log(url)
+      this.photo = url
+    })
+    this.$eventBus.$on('username', (name) => {
+      // console.log(name)
+      this.name = name
+    })
   }
 }
 </script>

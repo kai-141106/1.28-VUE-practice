@@ -5,6 +5,9 @@ import '@/styles/index.less'
 // 引入element-ui组件库 及样式
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+
+import EventBus from '@/EventBus'
+Vue.prototype.$eventBus = EventBus
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 
