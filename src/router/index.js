@@ -1,9 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import loginView from '@/views/Login/Login.vue'
-import LayoutView from '@/views/Layout/Layout'
-import Page404View from '@/views/404/page404'
-import HomeView from '@/views/Home/Home'
 // import AddArticle from '@/views/Article/addArticle'   下方使用懒加载
 
 import { Message } from 'element-ui'
@@ -11,13 +7,13 @@ Vue.use(VueRouter)
 
 const routes = [
   { path: '/', redirect: '/login' },
-  { path: '/login', component: loginView },
+  { path: '/login', component: () => import('@/views/Login/Login.vue') },
   {
     path: '/layout',
-    component: LayoutView,
+    component: () => import('@/views/Layout/Layout'),
     redirect: '/layout/home',
     children: [
-      { path: 'home', component: HomeView },
+      { path: 'home', component: () => import('@/views/Home/Home') },
       { path: 'addArticle', component: () => import('@/views/Article/addArticle') },
       { path: 'articleList', component: () => import('@/views/Article/articleList') },
       { path: 'image', name: 'image', component: () => import('@/views/Images/Images') },
@@ -26,7 +22,7 @@ const routes = [
       { path: 'settings', name: 'settings', component: () => import('@/views/Settings/Settings') }
     ]
   },
-  { path: '*', component: Page404View }
+  { path: '*', component: () => import('@/views/404/page404') }
 ]
 
 //

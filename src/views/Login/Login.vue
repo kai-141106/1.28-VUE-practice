@@ -50,7 +50,8 @@ export default {
       this.$refs.form.validate(async valid => { // form检验各种规则, valid有false代表验证失败
         if (!valid) return
         this.load = true
-        const res = await loginAPI(this.form)
+        const [err, res] = await loginAPI(this.form)
+        if (err) return
         // console.log(res)
         sessionStorage.setItem('token', res.data.data.token)
         this.load = false

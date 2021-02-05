@@ -41,7 +41,8 @@ export default {
   },
   methods: {
     async getFansListAPI () {
-      const res = await fansListAPI()
+      const [err, res] = await fansListAPI()
+      if (err) return
       // console.log(res)
       this.list = res.data.data.results
     }

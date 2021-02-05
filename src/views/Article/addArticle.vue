@@ -104,14 +104,16 @@ export default {
     }
   },
   async created () {
-    const res = await channelListAPI()
+    const [err, res] = await channelListAPI()
+    if (err) return
     this.articleArr = res.data.data.channels
     // console.log(this.articleArr)
     // 判断 是否有id
     if (this.$route.query.id) {
       this.articleId = this.$route.query.id
       // console.log(articleId)
-      const artres = await articleByIdAPI(this.articleId)
+      const [err, artres] = await articleByIdAPI(this.articleId)
+      if (err) return
       // console.log(res)t
       this.article = artres.data.data
     }
@@ -124,7 +126,8 @@ export default {
         this.load = true
         // 等于1 就证明 不是更新文章 是新增
         if (this.articleId === -1) {
-          await articleAddAPI({ draft: bool }, this.article)
+          const [err] = await articleAddAPI({ draft: bool }, this.article)
+          if (err) return
           if (bool === false) {
             this.$message({
               message: '文章发表成功',
@@ -139,7 +142,8 @@ export default {
           // 清空表单内容
           Object.assign(this.article, this.$options.data().article)
         } else { // 不是1 就证明要更新文章
-          await articleUpdateAPI(this.articleId, { draft: bool }, this.article)
+          const [err] = await articleUpdateAPI(this.articleId, { draft: bool }, this.article)
+          if (err) return
           if (bool === false) {
             this.$message({
               message: '此文章编辑成功',

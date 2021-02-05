@@ -70,6 +70,7 @@
                 name='image'
                 :show-file-list='false'
                 :on-success="handleAvatarSuccess"
+                @size-change="handleSizeChange"
                 :before-upload="beforeAvatarUpload"
             >
                <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -120,13 +121,13 @@ export default {
   },
   watch: {
     radioType (newVal) {
+      this.reqParams.collect = !(newVal === '全部')
       this.reqParmas.page = 1
       // if (newVal === '全部') {
       //   this.reqParmas.collect = false
       // } else if (newVal === '收藏') {
       //   this.reqParmas.collect = true
       // }
-      this.reqParmas.collect = this.radioType !== '全部'
       this.getUserImgFn()
     },
     value: {
@@ -151,7 +152,9 @@ export default {
       return isJPG && isLt2M // 如果返回true就开始上传
     },
     handleAvatarSuccess (res, file) {
+      // console.log(1)
       this.imageUrl = res.data.url
+      this.$message.success('图片上传成功')
       this.getUserImgFn()
     },
     openDialog () {
@@ -159,11 +162,13 @@ export default {
       this.selectImgUrl = this.coverImageUrl
     },
     async getUserImgFn () {
-      const res = await imgListAPI(this.reqParmas)
+      const [err, res] = await imgListAPI(this.reqParmas)
+      if (err) return
+      // console.log(res)
       this.imgListArr = res.data.data.results
       this.total = res.data.data.total_count
     },
-    async changePage (page) {
+    changePage (page) {
       this.reqParmas.page = page
       this.getUserImgFn()
     },
@@ -182,6 +187,11 @@ export default {
       } else {
         this.$emit('coverimg', this.coverImageUrl, this.index)
       }
+    },
+    handleSizeChange (val) {
+      // console.log(val)
+      this.reqParams.per_page = val
+      this.getImgListFn()
     }
   },
 

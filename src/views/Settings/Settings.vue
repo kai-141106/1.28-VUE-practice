@@ -63,11 +63,13 @@ export default {
   },
   methods: {
     async getuserInfoFn () {
-      const res = await userInfoAPI()
+      const [err, res] = await userInfoAPI()
+      if (err) return
       this.user = res.data.data
     },
     async updateInfoFn () {
-      await updateUserInfoAPI(this.user)
+      const [err] = await updateUserInfoAPI(this.user)
+      if (err) return
       this.$message.success('个人信息更新成功')
       // console.log(res)
       this.$eventBus.$emit('username', this.user.name)
@@ -76,7 +78,8 @@ export default {
     async updateAvatar (fileObj) {
       const fd = new FormData()
       fd.append('photo', fileObj.file)
-      const res = await updateAvatarAPI(fd)
+      const [err, res] = await updateAvatarAPI(fd)
+      if (err) return
       this.user.photo = res.data.data.photo
       this.$message.success('头像更新成功')
       this.$eventBus.$emit('photourl', this.user.photo)

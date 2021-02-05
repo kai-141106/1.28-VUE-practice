@@ -113,14 +113,16 @@ export default {
   },
   methods: {
     async getImgListFn () {
-      const res = await imgListAPI(this.reqParams)
+      const [err, res] = await imgListAPI(this.reqParams)
+      if (err) return
       // console.log(res)
       this.listArr = res.data.data.results
       this.total = res.data.data.total_count
     },
     async collectFn (obj) {
       this.reqParams.page = 1
-      await collectedImgAPI(obj.id, { collect: !obj.is_collected })
+      const [err] = await collectedImgAPI(obj.id, { collect: !obj.is_collected })
+      if (err) return
       // console.log(res)
       this.getImgListFn()
     },
@@ -139,7 +141,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        await imgDelAPI(obj.id)
+        const [err] = await imgDelAPI(obj.id)
+        if (err) return
         this.$message({
           type: 'success',
           message: '删除成功!'

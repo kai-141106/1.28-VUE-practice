@@ -101,7 +101,8 @@ export default {
     }
   },
   async created () {
-    const res = await userInfoAPI()
+    const [err, res] = await userInfoAPI()
+    if (err) return
     // console.log(res)
     this.name = res.data.data.name
     this.photo = res.data.data.photo

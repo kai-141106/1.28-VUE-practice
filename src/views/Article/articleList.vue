@@ -124,7 +124,8 @@ export default {
     }
   },
   async created () {
-    const res = await channelListAPI()
+    const [err, res] = await channelListAPI()
+    if (err) return
     // console.log(res)
     this.channelArr = res.data.data.channels
 
@@ -135,7 +136,7 @@ export default {
       this.getArticleListFn()
     },
     hEdit (index, obj) {
-      console.log(obj.id)
+      // console.log(obj.id)
       // 跳转到 发布页面  编辑与其用的一个组件 把文章的id传过去
       this.$router.push({
         path: '/layout/addArticle',
@@ -150,7 +151,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        await articleDeleteAPI(obj.id)
+        const [err] = await articleDeleteAPI(obj.id)
+        if (err) return
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -171,8 +173,8 @@ export default {
     async getArticleListFn () {
       this.load = true
       // 获取文章列表
-      const articleListRes = await articleListAPI(this.form)
-
+      const [err, articleListRes] = await articleListAPI(this.form)
+      if (err) return
       this.tableData = articleListRes.data.data.results
       this.total = articleListRes.data.data.total_count
       // console.log(articleListRes)

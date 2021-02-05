@@ -2,6 +2,7 @@
 // 请求路径公共头部
 import axios from 'axios'
 import { Message } from 'element-ui'
+import to from './awaitTo'
 // 引入json-bigint 模块来解决 大于2的51次幂的数
 import JSONbig from 'json-bigint'
 const ajax = axios.create({
@@ -64,4 +65,6 @@ ajax.interceptors.response.use(function (response) {
   console.dir(error)
   return Promise.reject(error)
 })
-export default ajax
+export default function (obj) {
+  return to(ajax(obj))
+}

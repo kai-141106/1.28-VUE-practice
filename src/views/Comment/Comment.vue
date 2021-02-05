@@ -71,7 +71,8 @@ export default {
   },
   methods: {
     async getCommentListFn () {
-      const res = await commentListAPI(this.reqParams)
+      const [err, res] = await commentListAPI(this.reqParams)
+      if (err) return
       // console.log(res)
       this.tableData = res.data.data.results
       this.total = res.data.data.total_count
@@ -79,7 +80,9 @@ export default {
     },
     async openOrCloseFn (obj, bool) {
       // console.log(obj)
-      await openOrCloseAPI({ article_id: obj.id }, { allow_comment: bool })
+
+      const [err] = await openOrCloseAPI({ article_id: obj.id.toString() }, { allow_comment: bool })
+      if (err) return
       this.getCommentListFn()
     },
     changePage (page) {
